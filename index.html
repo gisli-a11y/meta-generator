@@ -363,7 +363,6 @@
 </div>
 
 <script>
-const CORS_PROXY = 'https://api.allorigins.win/get?url=';
 
 function setStatus(msg, type = '') {
   const bar = document.getElementById('statusBar');
@@ -378,44 +377,6 @@ function hideStatus() {
   document.getElementById('statusBar').className = 'status-bar';
 }
 
-async function fetchPage(url) {
-  const proxyUrl = CORS_PROXY + encodeURIComponent(url);
-  const res = await fetch(proxyUrl);
-  if (!res.ok) throw new Error(`Proxy returned ${res.status}`);
-  const data = await res.json();
-  if (!data.contents) throw new Error('No content returned from proxy');
-  return data.contents;
-}
-
-function extractText(html, url) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-
-  // Remove noise
-  ['script', 'style', 'nav', 'footer', 'header', 'aside', 'noscript', 'svg'].forEach(tag => {
-    doc.querySelectorAll(tag).forEach(el => el.remove());
-  });
-
-  // Grab existing meta for context
-  const existingTitle = doc.querySelector('title')?.textContent?.trim() || '';
-  const existingDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') || '';
-  const existingOgTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content') || '';
-
-  // Get main content text
-  const main = doc.querySelector('main, article, [role="main"], .content, .post, #content') || doc.body;
-  const rawText = main?.innerText || main?.textContent || '';
-
-  // Collapse whitespace, limit length
-  const cleanText = rawText.replace(/\s+/g, ' ').trim().slice(0, 6000);
-
-  return {
-    text: cleanText,
-    existingTitle,
-    existingDesc,
-    existingOgTitle,
-    pageTitle: doc.title || ''
-  };
-}
 
 function charCountEl(id, count, max) {
   const el = document.getElementById(id);
@@ -480,11 +441,11 @@ function renderResults(data, url) {
   document.getElementById('results').className = 'results show';
 }
 
-async function callClaude(pageContent, url) {
+async function callClaude(url) {
   const res = await fetch('/api/generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url, pageContent }),
+    body: JSON.stringify({ url }),
   });
 
   const data = await res.json();
@@ -502,18 +463,8 @@ async function scanPage() {
   document.getElementById('results').className = 'results';
 
   try {
-    setStatus('Fetching webpage…');
-    const html = await fetchPage(url);
-
-    setStatus('Extracting content…');
-    const pageContent = extractText(html, url);
-
-    if (!pageContent.text || pageContent.text.length < 50) {
-      throw new Error('Could not extract enough content from that page. It may require JavaScript to render.');
-    }
-
-    setStatus('Generating meta tags with Claude…');
-    const metaData = await callClaude(pageContent, url);
+    setStatus('Fetching and analysing page…');
+    const metaData = await callClaude(url);
 
     setStatus('Done!', 'success');
     setTimeout(hideStatus, 2000);
