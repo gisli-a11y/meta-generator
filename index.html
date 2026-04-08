@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meta Tag Generator</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222536;
+    --border: rgba(255,255,255,0.08);
+    --accent: #7c6cfc;
+    --accent2: #a78bfa;
+    --text: #e8e8f0;
+    --muted: #8888aa;
+    --success: #34d399;
+    --error: #f87171;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .header p {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .input-row input {
+    flex: 1;
+  }
+
+  input, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--muted);
+  }
+
+
+  button.primary {
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 11px 22px;
+    white-space: nowrap;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  button.primary:hover { opacity: 0.88; }
+  button.primary:active { transform: scale(0.98); }
+  button.primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .status-bar {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .status-bar.show { display: flex; }
+  .status-bar.error { border-color: var(--error); color: var(--error); }
+  .status-bar.success { border-color: var(--success); color: var(--success); }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--muted);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .results { display: none; }
+  .results.show { display: block; }
+
+  .meta-group {
+    margin-bottom: 16px;
+  }
+
+  .meta-group-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .meta-item:last-child { border-bottom: none; }
+
+  .meta-key {
+    font-size: 0.8rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--muted);
+    min-width: 180px;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .meta-value {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    flex: 1;
+    color: var(--text);
+  }
+
+  .copy-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  .copy-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .copy-btn.copied { background: var(--success); color: #000; border-color: var(--success); }
+
+  .html-output {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: #c4b5fd;
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-x: auto;
+  }
+
+  .html-output .tag { color: #7dd3fc; }
+  .html-output .attr { color: #fde68a; }
+  .html-output .val { color: #a7f3d0; }
+
+  .copy-all-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+
+  .copy-all-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-family: inherit;
+    padding: 7px 14px;
+    transition: all 0.15s;
+  }
+
+  .copy-all-btn:hover { border-color: var(--accent); color: var(--accent2); }
+  .copy-all-btn.copied { border-color: var(--success); color: var(--success); }
+
+  .char-count {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-left: 4px;
+  }
+
+  .char-count.warn { color: #fbbf24; }
+  .char-count.over { color: var(--error); }
+
+  .tip {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  .tip a { color: var(--accent2); text-decoration: none; }
+  .tip a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>Meta Tag Generator</h1>
+    <p>Paste any URL — get AI-generated meta tags in seconds</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Webpage URL</div>
+    <div class="input-row">
+      <input type="url" id="urlInput" placeholder="https://example.com/your-page" />
+      <button class="primary" id="scanBtn" onclick="scanPage()">Scan & Generate</button>
+    </div>
+  </div>
+
+  <div class="status-bar" id="statusBar">
+    <div class="spinner" id="spinner"></div>
+    <span id="statusText">Fetching page…</span>
+  </div>
+
+  <div class="results" id="results">
+    <div class="card">
+      <div class="card-title">Generated Meta Tags</div>
+
+      <div class="meta-group">
+        <div class="meta-group-label">Core</div>
+        <div class="meta-item">
+          <span class="meta-key">title</span>
+          <span class="meta-value" id="val-title"></span>
+          <button class="copy-btn" onclick="copyField('val-title')">copy</button>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">meta description <span class="char-count" id="cc-desc"></span></span>
+          <span class="meta-value" id="val-desc"></span>
+          <button class="copy-btn" onclick="copyField('val-desc')">copy</button>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">keywords</span>
+          <span class="meta-value" id="val-keywords"></span>
+          <button class="copy-btn" onclick="copyField('val-keywords')">copy</button>
+        </div>
+      </div>
+
+      <div class="meta-group">
+        <div class="meta-group-label">Open Graph (Facebook / LinkedIn)</div>
+        <div class="meta-item">
+          <span class="meta-key">og:title</span>
+          <span class="meta-value" id="val-og-title"></span>
+          <button class="copy-btn" onclick="copyField('val-og-title')">copy</button>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">og:description <span class="char-count" id="cc-og-desc"></span></span>
+          <span class="meta-value" id="val-og-desc"></span>
+          <button class="copy-btn" onclick="copyField('val-og-desc')">copy</button>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">og:type</span>
+          <span class="meta-value" id="val-og-type"></span>
+          <button class="copy-btn" onclick="copyField('val-og-type')">copy</button>
+        </div>
+      </div>
+
+      <div class="meta-group">
+        <div class="meta-group-label">Twitter Card</div>
+        <div class="meta-item">
+          <span class="meta-key">twitter:card</span>
+          <span class="meta-value" id="val-tw-card"></span>
+          <button class="copy-btn" onclick="copyField('val-tw-card')">copy</button>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">twitter:title</span>
+          <span class="meta-value" id="val-tw-title"></span>
+          <button class="copy-btn" onclick="copyField('val-tw-title')">copy</button>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">twitter:description <span class="char-count" id="cc-tw-desc"></span></span>
+          <span class="meta-value" id="val-tw-desc"></span>
+          <button class="copy-btn" onclick="copyField('val-tw-desc')">copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">HTML Output</div>
+      <div class="copy-all-row">
+        <button class="copy-all-btn" id="copyAllBtn" onclick="copyAll()">Copy all HTML</button>
+      </div>
+      <div class="html-output" id="htmlOutput"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CORS_PROXY = 'https://api.allorigins.win/get?url=';
+
+function setStatus(msg, type = '') {
+  const bar = document.getElementById('statusBar');
+  const text = document.getElementById('statusText');
+  const spinner = document.getElementById('spinner');
+  bar.className = 'status-bar show ' + type;
+  text.textContent = msg;
+  spinner.style.display = (type === 'error' || type === 'success') ? 'none' : 'block';
+}
+
+function hideStatus() {
+  document.getElementById('statusBar').className = 'status-bar';
+}
+
+async function fetchPage(url) {
+  const proxyUrl = CORS_PROXY + encodeURIComponent(url);
+  const res = await fetch(proxyUrl);
+  if (!res.ok) throw new Error(`Proxy returned ${res.status}`);
+  const data = await res.json();
+  if (!data.contents) throw new Error('No content returned from proxy');
+  return data.contents;
+}
+
+function extractText(html, url) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  // Remove noise
+  ['script', 'style', 'nav', 'footer', 'header', 'aside', 'noscript', 'svg'].forEach(tag => {
+    doc.querySelectorAll(tag).forEach(el => el.remove());
+  });
+
+  // Grab existing meta for context
+  const existingTitle = doc.querySelector('title')?.textContent?.trim() || '';
+  const existingDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') || '';
+  const existingOgTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content') || '';
+
+  // Get main content text
+  const main = doc.querySelector('main, article, [role="main"], .content, .post, #content') || doc.body;
+  const rawText = main?.innerText || main?.textContent || '';
+
+  // Collapse whitespace, limit length
+  const cleanText = rawText.replace(/\s+/g, ' ').trim().slice(0, 6000);
+
+  return {
+    text: cleanText,
+    existingTitle,
+    existingDesc,
+    existingOgTitle,
+    pageTitle: doc.title || ''
+  };
+}
+
+function charCountEl(id, count, max) {
+  const el = document.getElementById(id);
+  el.textContent = `(${count}/${max})`;
+  el.className = 'char-count' + (count > max ? ' over' : count > max * 0.9 ? ' warn' : '');
+}
+
+function renderResults(data, url) {
+  const fields = {
+    'val-title': data.title,
+    'val-desc': data.description,
+    'val-keywords': data.keywords,
+    'val-og-title': data.og_title,
+    'val-og-desc': data.og_description,
+    'val-og-type': data.og_type,
+    'val-tw-card': data.twitter_card,
+    'val-tw-title': data.twitter_title,
+    'val-tw-desc': data.twitter_description,
+  };
+
+  for (const [id, val] of Object.entries(fields)) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val || '';
+  }
+
+  charCountEl('cc-desc', (data.description || '').length, 160);
+  charCountEl('cc-og-desc', (data.og_description || '').length, 200);
+  charCountEl('cc-tw-desc', (data.twitter_description || '').length, 200);
+
+  // Build HTML output
+  const esc = s => (s || '').replace(/"/g, '&quot;');
+  const html = [
+    `<!-- Primary Meta Tags -->`,
+    `<title>${esc(data.title)}</title>`,
+    `<meta name="title" content="${esc(data.title)}">`,
+    `<meta name="description" content="${esc(data.description)}">`,
+    `<meta name="keywords" content="${esc(data.keywords)}">`,
+    ``,
+    `<!-- Open Graph / Facebook -->`,
+    `<meta property="og:type" content="${esc(data.og_type)}">`,
+    `<meta property="og:url" content="${esc(url)}">`,
+    `<meta property="og:title" content="${esc(data.og_title)}">`,
+    `<meta property="og:description" content="${esc(data.og_description)}">`,
+    ``,
+    `<!-- Twitter -->`,
+    `<meta property="twitter:card" content="${esc(data.twitter_card)}">`,
+    `<meta property="twitter:url" content="${esc(url)}">`,
+    `<meta property="twitter:title" content="${esc(data.twitter_title)}">`,
+    `<meta property="twitter:description" content="${esc(data.twitter_description)}">`,
+  ].join('\n');
+
+  // Syntax highlight
+  const highlighted = html
+    .replace(/&lt;!--.*?--&gt;/g, m => `<span style="color:var(--muted)">${m}</span>`)
+    .replace(/(&lt;\/?)([\w:]+)/g, (_, lt, tag) => `${lt}<span class="tag">${tag}</span>`)
+    .replace(/([\w-:]+)(=&quot;)/g, (_, attr, eq) => `<span class="attr">${attr}</span>${eq}`)
+    .replace(/=&quot;([^&]*)&quot;/g, (_, val) => `=&quot;<span class="val">${val}</span>&quot;`);
+
+  document.getElementById('htmlOutput').innerHTML = highlighted;
+  document.getElementById('htmlOutput')._raw = html.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"');
+
+  document.getElementById('results').className = 'results show';
+}
+
+async function callClaude(pageContent, url) {
+  const res = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url, pageContent }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
+  return data;
+}
+
+async function scanPage() {
+  const url = document.getElementById('urlInput').value.trim();
+
+  if (!url || !url.startsWith('http')) { setStatus('Please enter a valid URL starting with http:// or https://', 'error'); return; }
+
+  const btn = document.getElementById('scanBtn');
+  btn.disabled = true;
+  document.getElementById('results').className = 'results';
+
+  try {
+    setStatus('Fetching webpage…');
+    const html = await fetchPage(url);
+
+    setStatus('Extracting content…');
+    const pageContent = extractText(html, url);
+
+    if (!pageContent.text || pageContent.text.length < 50) {
+      throw new Error('Could not extract enough content from that page. It may require JavaScript to render.');
+    }
+
+    setStatus('Generating meta tags with Claude…');
+    const metaData = await callClaude(pageContent, url);
+
+    setStatus('Done!', 'success');
+    setTimeout(hideStatus, 2000);
+    renderResults(metaData, url);
+
+  } catch (err) {
+    console.error(err);
+    setStatus('Error: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function copyField(id) {
+  const val = document.getElementById(id)?.textContent || '';
+  navigator.clipboard.writeText(val).then(() => {
+    const btn = event.target;
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+function copyAll() {
+  const raw = document.getElementById('htmlOutput')._raw || '';
+  navigator.clipboard.writeText(raw).then(() => {
+    const btn = document.getElementById('copyAllBtn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy all HTML'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+// Allow Enter key to trigger scan
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('urlInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') scanPage();
+  });
+});
+</script>
+</body>
+</html>
