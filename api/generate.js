@@ -63,9 +63,10 @@ export default async function handler(req) {
     });
   }
 
-  // Fetch the target page server-side (no CORS proxy needed)
-  let pageHtml;
-  try {
+  // Try direct fetch first, fall back to Jina.ai Reader
+  let pageContent;
+
+  async function tryDirect() {
     const pageRes = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; MetaTagBot/1.0)',
@@ -74,21 +75,36 @@ export default async function handler(req) {
       redirect: 'follow',
     });
     if (!pageRes.ok) throw new Error(`Page returned ${pageRes.status}`);
-    pageHtml = await pageRes.text();
-  } catch (err) {
-    return new Response(JSON.stringify({ error: `Could not fetch page: ${err.message}` }), {
-      status: 422,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const html = await pageRes.text();
+    const content = extractText(html, url);
+    if (!content.text || content.text.length < 50) throw new Error('Too little content');
+    return content;
   }
 
-  const pageContent = extractText(pageHtml, url);
-
-  if (!pageContent.text || pageContent.text.length < 50) {
-    return new Response(JSON.stringify({ error: 'Could not extract enough content from that page. It may require JavaScript to render.' }), {
-      status: 422,
-      headers: { 'Content-Type': 'application/json' },
+  async function tryJina() {
+    const jinaRes = await fetch(`https://r.jina.ai/${url}`, {
+      headers: {
+        'Accept': 'text/plain',
+        'X-Return-Format': 'text',
+      },
     });
+    if (!jinaRes.ok) throw new Error(`Jina returned ${jinaRes.status}`);
+    const text = (await jinaRes.text()).slice(0, 6000);
+    if (!text || text.length < 50) throw new Error('Too little content from Jina');
+    return { text, pageTitle: '', existingDesc: '' };
+  }
+
+  try {
+    pageContent = await tryDirect();
+  } catch {
+    try {
+      pageContent = await tryJina();
+    } catch (err) {
+      return new Response(JSON.stringify({ error: `Could not fetch page content: ${err.message}` }), {
+        status: 422,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
   }
 
   const prompt = `You are an SEO expert. Analyze the following webpage content and generate optimized meta tags.
