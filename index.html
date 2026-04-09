@@ -153,20 +153,58 @@
   .results { display: none; }
   .results.show { display: block; }
 
-  .meta-group {
-    margin-bottom: 16px;
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    overflow: hidden;
   }
 
-  .meta-group-label {
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--accent2);
-    margin-bottom: 10px;
-    padding-bottom: 8px;
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
     border-bottom: 1px solid var(--border);
   }
+
+  .section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .section-body {
+    padding: 0 20px;
+  }
+
+  .section-core .section-header { background: rgba(124,108,252,0.08); }
+  .section-core .section-icon { background: rgba(124,108,252,0.2); }
+  .section-core .section-title { color: #a78bfa; }
+
+  .section-og .section-header { background: rgba(59,130,246,0.08); }
+  .section-og .section-icon { background: rgba(59,130,246,0.2); }
+  .section-og .section-title { color: #60a5fa; }
+
+  .section-tw .section-header { background: rgba(20,184,166,0.08); }
+  .section-tw .section-icon { background: rgba(20,184,166,0.2); }
+  .section-tw .section-title { color: #2dd4bf; }
+
+  .section-html .section-header { background: rgba(251,191,36,0.06); }
+  .section-html .section-icon { background: rgba(251,191,36,0.15); }
+  .section-html .section-title { color: #fbbf24; }
 
   .meta-item {
     display: flex;
@@ -229,12 +267,6 @@
   .html-output .attr { color: #fde68a; }
   .html-output .val { color: #a7f3d0; }
 
-  .copy-all-row {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 12px;
-  }
-
   .copy-all-btn {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -291,18 +323,21 @@
   </div>
 
   <div class="results" id="results">
-    <div class="card">
-      <div class="card-title">Generated Meta Tags</div>
 
-      <div class="meta-group">
-        <div class="meta-group-label">Core</div>
+    <!-- Core -->
+    <div class="section-card section-core">
+      <div class="section-header">
+        <div class="section-icon">🔍</div>
+        <span class="section-title">Core</span>
+      </div>
+      <div class="section-body">
         <div class="meta-item">
           <span class="meta-key">title</span>
           <span class="meta-value" id="val-title"></span>
           <button class="copy-btn" onclick="copyField('val-title')">copy</button>
         </div>
         <div class="meta-item">
-          <span class="meta-key">meta description <span class="char-count" id="cc-desc"></span></span>
+          <span class="meta-key">description <span class="char-count" id="cc-desc"></span></span>
           <span class="meta-value" id="val-desc"></span>
           <button class="copy-btn" onclick="copyField('val-desc')">copy</button>
         </div>
@@ -312,9 +347,15 @@
           <button class="copy-btn" onclick="copyField('val-keywords')">copy</button>
         </div>
       </div>
+    </div>
 
-      <div class="meta-group">
-        <div class="meta-group-label">Open Graph (Facebook / LinkedIn)</div>
+    <!-- Open Graph -->
+    <div class="section-card section-og">
+      <div class="section-header">
+        <div class="section-icon">👥</div>
+        <span class="section-title">Open Graph — Facebook / LinkedIn</span>
+      </div>
+      <div class="section-body">
         <div class="meta-item">
           <span class="meta-key">og:title</span>
           <span class="meta-value" id="val-og-title"></span>
@@ -331,9 +372,15 @@
           <button class="copy-btn" onclick="copyField('val-og-type')">copy</button>
         </div>
       </div>
+    </div>
 
-      <div class="meta-group">
-        <div class="meta-group-label">Twitter Card</div>
+    <!-- Twitter Card -->
+    <div class="section-card section-tw">
+      <div class="section-header">
+        <div class="section-icon">𝕏</div>
+        <span class="section-title">Twitter Card</span>
+      </div>
+      <div class="section-body">
         <div class="meta-item">
           <span class="meta-key">twitter:card</span>
           <span class="meta-value" id="val-tw-card"></span>
@@ -352,13 +399,19 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">HTML Output</div>
-      <div class="copy-all-row">
-        <button class="copy-all-btn" id="copyAllBtn" onclick="copyAll()">Copy all HTML</button>
+    <!-- HTML Output -->
+    <div class="section-card section-html">
+      <div class="section-header">
+        <div class="section-icon">{ }</div>
+        <span class="section-title">HTML Output</span>
+        <div style="flex:1"></div>
+        <button class="copy-all-btn" id="copyAllBtn" onclick="copyAll()">Copy all</button>
       </div>
-      <div class="html-output" id="htmlOutput"></div>
+      <div style="padding: 16px 20px;">
+        <div class="html-output" id="htmlOutput"></div>
+      </div>
     </div>
+
   </div>
 </div>
 
