@@ -259,10 +259,16 @@
     flex-shrink: 0;
   }
 
+  .meta-value-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
   .meta-value {
     font-size: 0.88rem;
     line-height: 1.5;
-    flex: 1;
     color: var(--text);
   }
 
@@ -374,8 +380,11 @@
               <button class="copy-btn" onclick="copyField('val-title')">copy</button>
             </div>
             <div class="meta-item">
-              <span class="meta-key">description <span class="char-count" id="cc-desc"></span></span>
-              <span class="meta-value" id="val-desc"></span>
+              <span class="meta-key">description</span>
+              <span class="meta-value-wrap">
+                <span class="meta-value" id="val-desc"></span>
+                <span class="char-count" id="cc-desc"></span>
+              </span>
               <button class="copy-btn" onclick="copyField('val-desc')">copy</button>
             </div>
             <div class="meta-item">
@@ -404,8 +413,11 @@
               <button class="copy-btn" onclick="copyField('val-og-title')">copy</button>
             </div>
             <div class="meta-item">
-              <span class="meta-key">og:description <span class="char-count" id="cc-og-desc"></span></span>
-              <span class="meta-value" id="val-og-desc"></span>
+              <span class="meta-key">og:description</span>
+              <span class="meta-value-wrap">
+                <span class="meta-value" id="val-og-desc"></span>
+                <span class="char-count" id="cc-og-desc"></span>
+              </span>
               <button class="copy-btn" onclick="copyField('val-og-desc')">copy</button>
             </div>
             <div class="meta-item">
@@ -439,8 +451,11 @@
               <button class="copy-btn" onclick="copyField('val-tw-title')">copy</button>
             </div>
             <div class="meta-item">
-              <span class="meta-key">twitter:description <span class="char-count" id="cc-tw-desc"></span></span>
-              <span class="meta-value" id="val-tw-desc"></span>
+              <span class="meta-key">twitter:description</span>
+              <span class="meta-value-wrap">
+                <span class="meta-value" id="val-tw-desc"></span>
+                <span class="char-count" id="cc-tw-desc"></span>
+              </span>
               <button class="copy-btn" onclick="copyField('val-tw-desc')">copy</button>
             </div>
           </div>
