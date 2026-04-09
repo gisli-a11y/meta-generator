@@ -166,6 +166,14 @@
     align-items: center;
     gap: 10px;
     padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.15s;
+  }
+
+  .section-header:hover { opacity: 0.85; }
+
+  .section-card.open .section-header {
     border-bottom: 1px solid var(--border);
   }
 
@@ -184,6 +192,32 @@
     font-size: 0.82rem;
     font-weight: 600;
     letter-spacing: 0.04em;
+  }
+
+  .section-chevron {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 0.7rem;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  .section-card.open .section-chevron {
+    transform: rotate(180deg);
+  }
+
+  .section-body-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.28s ease;
+  }
+
+  .section-card.open .section-body-wrap {
+    grid-template-rows: 1fr;
+  }
+
+  .section-body-inner {
+    overflow: hidden;
   }
 
   .section-body {
@@ -324,91 +358,112 @@
 
   <div class="results" id="results">
 
-    <!-- Core -->
-    <div class="section-card section-core">
-      <div class="section-header">
+    <!-- Core (starts open) -->
+    <div class="section-card section-core open">
+      <div class="section-header" onclick="toggleSection(this)">
         <div class="section-icon">🔍</div>
         <span class="section-title">Core</span>
+        <span class="section-chevron">▼</span>
       </div>
-      <div class="section-body">
-        <div class="meta-item">
-          <span class="meta-key">title</span>
-          <span class="meta-value" id="val-title"></span>
-          <button class="copy-btn" onclick="copyField('val-title')">copy</button>
-        </div>
-        <div class="meta-item">
-          <span class="meta-key">description <span class="char-count" id="cc-desc"></span></span>
-          <span class="meta-value" id="val-desc"></span>
-          <button class="copy-btn" onclick="copyField('val-desc')">copy</button>
-        </div>
-        <div class="meta-item">
-          <span class="meta-key">keywords</span>
-          <span class="meta-value" id="val-keywords"></span>
-          <button class="copy-btn" onclick="copyField('val-keywords')">copy</button>
+      <div class="section-body-wrap">
+        <div class="section-body-inner">
+          <div class="section-body">
+            <div class="meta-item">
+              <span class="meta-key">title</span>
+              <span class="meta-value" id="val-title"></span>
+              <button class="copy-btn" onclick="copyField('val-title')">copy</button>
+            </div>
+            <div class="meta-item">
+              <span class="meta-key">description <span class="char-count" id="cc-desc"></span></span>
+              <span class="meta-value" id="val-desc"></span>
+              <button class="copy-btn" onclick="copyField('val-desc')">copy</button>
+            </div>
+            <div class="meta-item">
+              <span class="meta-key">keywords</span>
+              <span class="meta-value" id="val-keywords"></span>
+              <button class="copy-btn" onclick="copyField('val-keywords')">copy</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Open Graph -->
+    <!-- Open Graph (starts closed) -->
     <div class="section-card section-og">
-      <div class="section-header">
+      <div class="section-header" onclick="toggleSection(this)">
         <div class="section-icon">👥</div>
         <span class="section-title">Open Graph — Facebook / LinkedIn</span>
+        <span class="section-chevron">▼</span>
       </div>
-      <div class="section-body">
-        <div class="meta-item">
-          <span class="meta-key">og:title</span>
-          <span class="meta-value" id="val-og-title"></span>
-          <button class="copy-btn" onclick="copyField('val-og-title')">copy</button>
-        </div>
-        <div class="meta-item">
-          <span class="meta-key">og:description <span class="char-count" id="cc-og-desc"></span></span>
-          <span class="meta-value" id="val-og-desc"></span>
-          <button class="copy-btn" onclick="copyField('val-og-desc')">copy</button>
-        </div>
-        <div class="meta-item">
-          <span class="meta-key">og:type</span>
-          <span class="meta-value" id="val-og-type"></span>
-          <button class="copy-btn" onclick="copyField('val-og-type')">copy</button>
+      <div class="section-body-wrap">
+        <div class="section-body-inner">
+          <div class="section-body">
+            <div class="meta-item">
+              <span class="meta-key">og:title</span>
+              <span class="meta-value" id="val-og-title"></span>
+              <button class="copy-btn" onclick="copyField('val-og-title')">copy</button>
+            </div>
+            <div class="meta-item">
+              <span class="meta-key">og:description <span class="char-count" id="cc-og-desc"></span></span>
+              <span class="meta-value" id="val-og-desc"></span>
+              <button class="copy-btn" onclick="copyField('val-og-desc')">copy</button>
+            </div>
+            <div class="meta-item">
+              <span class="meta-key">og:type</span>
+              <span class="meta-value" id="val-og-type"></span>
+              <button class="copy-btn" onclick="copyField('val-og-type')">copy</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Twitter Card -->
+    <!-- Twitter Card (starts closed) -->
     <div class="section-card section-tw">
-      <div class="section-header">
+      <div class="section-header" onclick="toggleSection(this)">
         <div class="section-icon">𝕏</div>
         <span class="section-title">Twitter Card</span>
+        <span class="section-chevron">▼</span>
       </div>
-      <div class="section-body">
-        <div class="meta-item">
-          <span class="meta-key">twitter:card</span>
-          <span class="meta-value" id="val-tw-card"></span>
-          <button class="copy-btn" onclick="copyField('val-tw-card')">copy</button>
-        </div>
-        <div class="meta-item">
-          <span class="meta-key">twitter:title</span>
-          <span class="meta-value" id="val-tw-title"></span>
-          <button class="copy-btn" onclick="copyField('val-tw-title')">copy</button>
-        </div>
-        <div class="meta-item">
-          <span class="meta-key">twitter:description <span class="char-count" id="cc-tw-desc"></span></span>
-          <span class="meta-value" id="val-tw-desc"></span>
-          <button class="copy-btn" onclick="copyField('val-tw-desc')">copy</button>
+      <div class="section-body-wrap">
+        <div class="section-body-inner">
+          <div class="section-body">
+            <div class="meta-item">
+              <span class="meta-key">twitter:card</span>
+              <span class="meta-value" id="val-tw-card"></span>
+              <button class="copy-btn" onclick="copyField('val-tw-card')">copy</button>
+            </div>
+            <div class="meta-item">
+              <span class="meta-key">twitter:title</span>
+              <span class="meta-value" id="val-tw-title"></span>
+              <button class="copy-btn" onclick="copyField('val-tw-title')">copy</button>
+            </div>
+            <div class="meta-item">
+              <span class="meta-key">twitter:description <span class="char-count" id="cc-tw-desc"></span></span>
+              <span class="meta-value" id="val-tw-desc"></span>
+              <button class="copy-btn" onclick="copyField('val-tw-desc')">copy</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- HTML Output -->
+    <!-- HTML Output (starts closed) -->
     <div class="section-card section-html">
-      <div class="section-header">
+      <div class="section-header" onclick="toggleSection(this)">
         <div class="section-icon">{ }</div>
         <span class="section-title">HTML Output</span>
-        <div style="flex:1"></div>
-        <button class="copy-all-btn" id="copyAllBtn" onclick="copyAll()">Copy all</button>
+        <span class="section-chevron">▼</span>
       </div>
-      <div style="padding: 16px 20px;">
-        <div class="html-output" id="htmlOutput"></div>
+      <div class="section-body-wrap">
+        <div class="section-body-inner">
+          <div style="padding: 16px 20px; display:flex; flex-direction:column; gap:12px;">
+            <div class="copy-all-row" style="display:flex; justify-content:flex-end;">
+              <button class="copy-all-btn" id="copyAllBtn" onclick="copyAll()">Copy all</button>
+            </div>
+            <div class="html-output" id="htmlOutput"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -416,6 +471,11 @@
 </div>
 
 <script>
+
+function toggleSection(header) {
+  const card = header.closest('.section-card');
+  card.classList.toggle('open');
+}
 
 function setStatus(msg, type = '') {
   const bar = document.getElementById('statusBar');
